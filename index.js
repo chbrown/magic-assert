@@ -1,24 +1,10 @@
-/**
- * Module dependencies.
- */
+/*jslint node: true */
+var fs = require('fs');
+var assert = require('assert');
+var callsite = require('callsite');
 
-var AssertionError = require('assert').AssertionError
-  , callsite = require('callsite')
-  , fs = require('fs')
-
-/**
- * Expose `assert`.
- */
-
-module.exports = process.env.NO_ASSERT
-  ? function(){}
-  : assert;
-
-/**
- * Assert the given `expr`.
- */
-
-function assert(expr) {
+module.exports = function(expr) {
+  if (process.env.NO_ASSERT) return;
   if (expr) return;
 
   var stack = callsite();
@@ -29,10 +15,10 @@ function assert(expr) {
   var line = src.split('\n')[lineno-1];
   var src = line.match(/assert\((.*)\)/)[1];
 
-  var err = new AssertionError({
+  var err = new assert.AssertionError({
     message: src,
     stackStartFunction: stack[0].fun
   });
 
   throw err;
-}
+};
