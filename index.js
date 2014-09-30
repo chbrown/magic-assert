@@ -1,7 +1,17 @@
 /*jslint node: true */
 var fs = require('fs');
 var assert = require('assert');
-var callsite = require('callsite');
+
+var callsite = function() {
+  var orig = Error.prepareStackTrace;
+  Error.prepareStackTrace = function(_, stack) { return stack; };
+  var err = new Error;
+  Error.captureStackTrace(err, arguments.callee);
+  var stack = err.stack;
+  Error.prepareStackTrace = orig;
+  return stack;
+};
+
 
 module.exports = function(expr) {
   if (process.env.NO_ASSERT) return;
